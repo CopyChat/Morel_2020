@@ -1,0 +1,97 @@
+WRF errors:
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Successful completion of metgrid.  !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Note: The following floating-point exceptions are signalling: IEEE_OVERFLOW_FLAG
+__________________________________
+
+
+- [ ] Running real.exe
+=================================================== real.exe
+ metgrid input_wrf.F first_date_input = 2004-10-15_00:00:00
+ metgrid input_wrf.F first_date_nml = 2004-10-15_00:00:00
+ dx and dy from file        25000.0000       25000.0000
+ dx and dy from namelist    18750.0000       18750.0000
+d01 2004-10-15_00:00:00 ---- ERROR: DX and DY do not match comparing namelist to the input file
+----------------- ERROR -------------------
+namelist    : NUM_LAND_CAT =         24
+input files : NUM_LAND_CAT =         21 (from geogrid selections).
+d01 2004-10-15_00:00:00 ---- ERROR: Mismatch between namelist and wrf input files for dimension NUM_LAND_CAT
+----------------- ERROR -------------------
+namelist    : num_metgrid_soil_levels =          4
+input files : NUM_METGRID_SOIL_LEVELS =          0 (from met_em files).
+d01 2004-10-15_00:00:00 ---- ERROR: Mismatch between namelist and global attribute NUM_METGRID_SOIL_LEVELS
+NOTE:       3 namelist vs input data inconsistencies found.
+-------------- FATAL CALLED ———————
+…
+===================================================
+
+So, for test, change the values in namelist to match those in the input files.
+change the NUM_LAND_CAT parameter in your namelist from 24 to 21.
+Download/use the SFC data, then got right value of NUM_METGRID_SOIL_LEVELS =  4
+Change dx and dy to match those values in the input files 25000.
+
+
+
+- [ ] Error of not enough eta levels to reach p_top:
+==================================================
+Using sfcprs3 to compute psfc
+d01 2004-10-15_00:00:00 You need one of four things:
+d01 2004-10-15_00:00:00 1) More eta levels: e_vert
+d01 2004-10-15_00:00:00 2) A lower p_top: p_top_requested
+d01 2004-10-15_00:00:00 3) Increase the lowest eta thickness: dzbot
+d01 2004-10-15_00:00:00 4) Increase the stretching factor: dzstretch_s or dzstretch_u
+d01 2004-10-15_00:00:00 All are namelist options
+-------------- FATAL CALLED ---------------
+FATAL CALLED FROM FILE:  <stdin>  LINE:    7349
+not enough eta levels to reach p_top
+-------------------------------------------
+application called MPI_Abort(MPI_COMM_WORLD, 1) - process 0
+===================================================
+
+Background:
+	Eta levels are based on surface pressure and pressure at the top of the atmosphere eta(i) = (p(i) - p(0))/(p(0) - p(top))
+That means that the height of each level changes based on the surface pressure. This also means that for high elevation terrain, the first eta level will be much closer to the surface than for lower elevations. So don't be discouraged that your height level does not match your calculations perfectly.
+
+Solutions: using e_vert = 35 levels
+
+
+- [ ] Error:
+==================================================
+ *************************************
+d01 2005-04-30_18:00:00  alloc_space_field: domain            2 ,               3529728  bytes allocated
+d01 2005-04-30_18:00:00  alloc_space_field: domain            2 ,              67761980  bytes allocated
+d02 2004-10-15_00:00:00  Yes, this special data is acceptable to use: OUTPUT FROM METGRID V4.0.3
+d02 2004-10-15_00:00:00  Input data is acceptable to use: met_em.d02.2004-10-15_00:00:00.nc
+ metgrid input_wrf.F first_date_input = 2004-10-15_00:00:00
+ metgrid input_wrf.F first_date_nml = 2004-10-15_00:00:00
+ dx and dy from file        5000.00000       5000.00000
+ dx and dy from namelist    3750.00000       3750.00000
+d02 2004-10-15_00:00:00 ---- ERROR: DX and DY do not match comparing namelist to the input file
+NOTE:       1 namelist vs input data inconsistencies found.
+-------------- FATAL CALLED ---------------
+FATAL CALLED FROM FILE:  <stdin>  LINE:    1276
+NOTE:  Please check and reset these options
+-------------------------------------------
+application called MPI_Abort(MPI_COMM_WORLD, 1) - process 0
+==================================================
+
+
+Solutions: change the namelist.input.
+
+
+
+- [x] ===================================================
+So, the dx and dy are changed from:
+
+ dx                                  = 18750.,       3750.,         750.,
+ dy                                  = 18750.,       3750.,         750.,
+
+To:
+
+ dx                                  = 25000.,       5000.,         1000.,
+ dy                                  = 25000.,       5000.,         1000.,
+===================================================
+
+	
