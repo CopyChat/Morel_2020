@@ -1,0 +1,222 @@
+taskid: 0 hostname: log01
+ module_io_quilt_old.F        2931 F
+Quilting with   1 groups of   0 I/O tasks.
+ Ntasks in X            1 , ntasks in Y            1
+WRF V4.1 MODEL
+ *************************************
+ Parent domain
+ ids,ide,jds,jde            1         145           1         120
+ ims,ime,jms,jme           -4         150          -4         125
+ ips,ipe,jps,jpe            1         145           1         120
+ *************************************
+DYNAMICS OPTION: Eulerian Mass Coordinate
+   alloc_space_field: domain            1 ,             459733160  bytes allocated
+  med_initialdata_input: calling input_input
+ W A R N I N G : Problem opening myout_d01.txt
+ W A R N I N G : Problem opening myout_d01.txt
+ Ignoring problems reading myout_d01.txt
+Continuing.  To make this a fatal error, set ignore_iofields_warn to false in namelist
+
+   Input data is acceptable to use: wrfinput_d01
+Timing for processing wrfinput file (stream 0) for domain        1:    0.22021 elapsed seconds
+Max map factor in domain 1 =  1.02. Scale the dt in the model accordingly.
+INPUT LandUse = "MODIFIED_IGBP_MODIS_NOAH"
+ LANDUSE TYPE = "MODIFIED_IGBP_MODIS_NOAH" FOUND          33  CATEGORIES           2  SEASONS WATER CATEGORY =           17  SNOW CATEGORY =           15
+Climatological albedo is used instead of table values
+INITIALIZE THREE Noah LSM RELATED TABLES
+Skipping over LUTYPE = USGS
+ LANDUSE TYPE = MODIFIED_IGBP_MODIS_NOAH FOUND          20  CATEGORIES
+ INPUT SOIL TEXTURE CLASSIFICATION = STAS
+ SOIL TEXTURE CLASSIFICATION = STAS FOUND          19  CATEGORIES
+D01 3-D analysis nudging for wind is applied and Guv=   0.2315E-04
+D01 3-D analysis nudging for temperature is applied and Gt=   0.1157E-04
+D01 3-D analysis nudging for water vapor mixing ratio is applied and Gq=   0.1157E-04
+D01 3-D analysis nudging for wind is turned off within the PBL.
+D01 3-D analysis nudging for temperature is turned off within the PBL.
+D01 3-D analysis nudging for water vapor mixing ratio is turned off within the PBL.
+ *************************************
+ Nesting domain
+ ids,ide,jds,jde            1          71           1          71
+ ims,ime,jms,jme           -4          80          -4          80
+ ips,ipe,jps,jpe            1          71           1          71
+ INTERMEDIATE domain
+ ids,ide,jds,jde           64          83          51          70
+ ims,ime,jms,jme           59          88          46          75
+ ips,ipe,jps,jpe           62          85          49          72
+ *************************************
+d01 2004-10-15_00:00:00  alloc_space_field: domain            2 ,               5515200  bytes allocated
+d01 2004-10-15_00:00:00  alloc_space_field: domain            2 ,             152078452  bytes allocated
+d01 2004-10-15_00:00:00 *** Initializing nest domain # 2 from an input file. ***
+d01 2004-10-15_00:00:00 med_initialdata_input: calling input_input
+ W A R N I N G : Problem opening myout_d02.txt
+d01 2004-10-15_00:00:00  Input data is acceptable to use: wrfinput_d02
+Timing for processing wrfinput file (stream 0) for domain        2:    0.04306 elapsed seconds
+INPUT LandUse = "MODIFIED_IGBP_MODIS_NOAH"
+ LANDUSE TYPE = "MODIFIED_IGBP_MODIS_NOAH" FOUND          33  CATEGORIES           2  SEASONS WATER CATEGORY =           17  SNOW CATEGORY =           15
+Climatological albedo is used instead of table values
+INITIALIZE THREE Noah LSM RELATED TABLES
+Skipping over LUTYPE = USGS
+ LANDUSE TYPE = MODIFIED_IGBP_MODIS_NOAH FOUND          20  CATEGORIES
+ INPUT SOIL TEXTURE CLASSIFICATION = STAS
+ SOIL TEXTURE CLASSIFICATION = STAS FOUND          19  CATEGORIES
+INPUT LandUse = "MODIFIED_IGBP_MODIS_NOAH"
+ LANDUSE TYPE = "MODIFIED_IGBP_MODIS_NOAH" FOUND          33  CATEGORIES           2  SEASONS WATER CATEGORY =           17  SNOW CATEGORY =           15
+Climatological albedo is used instead of table values
+INITIALIZE THREE Noah LSM RELATED TABLES
+Skipping over LUTYPE = USGS
+ LANDUSE TYPE = MODIFIED_IGBP_MODIS_NOAH FOUND          20  CATEGORIES
+ INPUT SOIL TEXTURE CLASSIFICATION = STAS
+ SOIL TEXTURE CLASSIFICATION = STAS FOUND          19  CATEGORIES
+Max map factor in domain 1 =  1.02. Scale the dt in the model accordingly.
+INPUT LandUse = "MODIFIED_IGBP_MODIS_NOAH"
+ LANDUSE TYPE = "MODIFIED_IGBP_MODIS_NOAH" FOUND          33  CATEGORIES           2  SEASONS WATER CATEGORY =           17  SNOW CATEGORY =           15
+Climatological albedo is used instead of table values
+INITIALIZE THREE Noah LSM RELATED TABLES
+Skipping over LUTYPE = USGS
+ LANDUSE TYPE = MODIFIED_IGBP_MODIS_NOAH FOUND          20  CATEGORIES
+ INPUT SOIL TEXTURE CLASSIFICATION = STAS
+ SOIL TEXTURE CLASSIFICATION = STAS FOUND          19  CATEGORIES
+D01 3-D analysis nudging for wind is applied and Guv=   0.2315E-04
+D01 3-D analysis nudging for temperature is applied and Gt=   0.1157E-04
+D01 3-D analysis nudging for water vapor mixing ratio is applied and Gq=   0.1157E-04
+D01 3-D analysis nudging for wind is turned off within the PBL.
+D01 3-D analysis nudging for temperature is turned off within the PBL.
+D01 3-D analysis nudging for water vapor mixing ratio is turned off within the PBL.
+ W A R N I N G : Problem opening myout_d01.txt
+ W A R N I N G : Problem opening myout_d01.txt
+Timing for Writing wrfout_d01_2004-10-15_00:00:00 for domain        1:    0.28218 elapsed seconds
+ W A R N I N G : Problem opening myout_d01.txt
+ W A R N I N G : Problem opening myout_d01.txt
+Timing for Writing addout_d01.nc for domain        1:    0.01836 elapsed seconds
+ W A R N I N G : Problem opening myout_d01.txt
+ W A R N I N G : Problem opening myout_d01.txt
+Timing for Writing wrfxtrm_d01_2004-10-15_00:00:00.nc for domain        1:    0.04754 elapsed seconds
+ W A R N I N G : Problem opening myout_d01.txt
+ W A R N I N G : Problem opening myout_d01.txt
+d01 2004-10-15_00:00:00  Input data is acceptable to use: wrflowinp_d01
+d01 2004-10-15_00:00:00 Input data processed for aux input   4 for domain   1
+ W A R N I N G : Problem opening myout_d01.txt
+ W A R N I N G : Problem opening myout_d01.txt
+d01 2004-10-15_00:00:00  Input data is acceptable to use: wrffdda_d01
+d01 2004-10-15_00:00:00 Input data processed for aux input  10 for domain   1
+ W A R N I N G : Problem opening myout_d01.txt
+d01 2004-10-15_00:00:00  Input data is acceptable to use: wrfbdy_d01
+Timing for processing lateral boundary for domain        1:    2.35751 elapsed seconds
+ Tile Strategy is not specified. Assuming 1D-Y
+WRF TILE   1 IS      1 IE    145 JS      1 JE    120
+WRF NUMBER OF TILES =   1
+D01 3-D analysis nudging reads new data at time =      0.000 min.
+D01 3-D analysis nudging bracketing times =     0.00  360.00 min.
+d01 2004-10-15_00:00:00 Re-initializing accumulation arrays
+ *************************************
+ Nesting domain
+ ids,ide,jds,jde            1         141           1         141
+ ims,ime,jms,jme           -4         150          -4         150
+ ips,ipe,jps,jpe            1         141           1         141
+ INTERMEDIATE domain
+ ids,ide,jds,jde           21          54          19          52
+ ims,ime,jms,jme           16          59          14          57
+ ips,ipe,jps,jpe           19          56          17          54
+ *************************************
+d02 2004-10-15_00:00:00  alloc_space_field: domain            3 ,              11863808  bytes allocated
+d02 2004-10-15_00:00:00  alloc_space_field: domain            3 ,             489182632  bytes allocated
+d02 2004-10-15_00:00:00 *** Initializing nest domain # 3 from an input file. ***
+d02 2004-10-15_00:00:00 med_initialdata_input: calling input_input
+ W A R N I N G : Problem opening myout_d03.txt
+d02 2004-10-15_00:00:00  Input data is acceptable to use: wrfinput_d03
+Timing for processing wrfinput file (stream 0) for domain        3:    0.26052 elapsed seconds
+INPUT LandUse = "MODIFIED_IGBP_MODIS_NOAH"
+ LANDUSE TYPE = "MODIFIED_IGBP_MODIS_NOAH" FOUND          33  CATEGORIES           2  SEASONS WATER CATEGORY =           17  SNOW CATEGORY =           15
+Climatological albedo is used instead of table values
+INITIALIZE THREE Noah LSM RELATED TABLES
+Skipping over LUTYPE = USGS
+ LANDUSE TYPE = MODIFIED_IGBP_MODIS_NOAH FOUND          20  CATEGORIES
+ INPUT SOIL TEXTURE CLASSIFICATION = STAS
+ SOIL TEXTURE CLASSIFICATION = STAS FOUND          19  CATEGORIES
+INPUT LandUse = "MODIFIED_IGBP_MODIS_NOAH"
+ LANDUSE TYPE = "MODIFIED_IGBP_MODIS_NOAH" FOUND          33  CATEGORIES           2  SEASONS WATER CATEGORY =           17  SNOW CATEGORY =           15
+Climatological albedo is used instead of table values
+INITIALIZE THREE Noah LSM RELATED TABLES
+Skipping over LUTYPE = USGS
+ LANDUSE TYPE = MODIFIED_IGBP_MODIS_NOAH FOUND          20  CATEGORIES
+ INPUT SOIL TEXTURE CLASSIFICATION = STAS
+ SOIL TEXTURE CLASSIFICATION = STAS FOUND          19  CATEGORIES
+INPUT LandUse = "MODIFIED_IGBP_MODIS_NOAH"
+ LANDUSE TYPE = "MODIFIED_IGBP_MODIS_NOAH" FOUND          33  CATEGORIES           2  SEASONS WATER CATEGORY =           17  SNOW CATEGORY =           15
+Climatological albedo is used instead of table values
+INITIALIZE THREE Noah LSM RELATED TABLES
+Skipping over LUTYPE = USGS
+ LANDUSE TYPE = MODIFIED_IGBP_MODIS_NOAH FOUND          20  CATEGORIES
+ INPUT SOIL TEXTURE CLASSIFICATION = STAS
+ SOIL TEXTURE CLASSIFICATION = STAS FOUND          19  CATEGORIES
+ W A R N I N G : Problem opening myout_d02.txt
+ W A R N I N G : Problem opening myout_d02.txt
+Timing for Writing wrfout_d02_2004-10-15_00:00:00 for domain        2:    0.18384 elapsed seconds
+ W A R N I N G : Problem opening myout_d02.txt
+ W A R N I N G : Problem opening myout_d02.txt
+Timing for Writing addout_d02.nc for domain        2:    0.01695 elapsed seconds
+ W A R N I N G : Problem opening myout_d02.txt
+ W A R N I N G : Problem opening myout_d02.txt
+Timing for Writing wrfxtrm_d02_2004-10-15_00:00:00.nc for domain        2:    0.04294 elapsed seconds
+ W A R N I N G : Problem opening myout_d02.txt
+ W A R N I N G : Problem opening myout_d02.txt
+d02 2004-10-15_00:00:00  Input data is acceptable to use: wrflowinp_d02
+d02 2004-10-15_00:00:00 Input data processed for aux input   4 for domain   2
+ Tile Strategy is not specified. Assuming 1D-Y
+WRF TILE   1 IS      1 IE     71 JS      1 JE     71
+WRF NUMBER OF TILES =   1
+d02 2004-10-15_00:00:00 Re-initializing accumulation arrays
+ W A R N I N G : Problem opening myout_d03.txt
+ W A R N I N G : Problem opening myout_d03.txt
+Timing for Writing wrfout_d03_2004-10-15_00:00:00 for domain        3:    0.28831 elapsed seconds
+ W A R N I N G : Problem opening myout_d03.txt
+ W A R N I N G : Problem opening myout_d03.txt
+Timing for Writing addout_d03.nc for domain        3:    0.01704 elapsed seconds
+ W A R N I N G : Problem opening myout_d03.txt
+ W A R N I N G : Problem opening myout_d03.txt
+Timing for Writing wrfxtrm_d03_2004-10-15_00:00:00.nc for domain        3:    0.04705 elapsed seconds
+ W A R N I N G : Problem opening myout_d03.txt
+ W A R N I N G : Problem opening myout_d03.txt
+d03 2004-10-15_00:00:00  Input data is acceptable to use: wrflowinp_d03
+d03 2004-10-15_00:00:00 Input data processed for aux input   4 for domain   3
+ Tile Strategy is not specified. Assuming 1D-Y
+WRF TILE   1 IS      1 IE    141 JS      1 JE    141
+WRF NUMBER OF TILES =   1
+d03 2004-10-15_00:00:00 Re-initializing accumulation arrays
+Timing for main: time 2004-10-15_00:00:02 on domain   3:    3.95187 elapsed seconds
+Timing for main: time 2004-10-15_00:00:04 on domain   3:    1.48327 elapsed seconds
+Timing for main: time 2004-10-15_00:00:07 on domain   3:    1.49075 elapsed seconds
+Timing for main: time 2004-10-15_00:00:09 on domain   3:    1.47947 elapsed seconds
+Timing for main: time 2004-10-15_00:00:12 on domain   3:    1.48211 elapsed seconds
+Timing for main: time 2004-10-15_00:00:12 on domain   2:   16.27980 elapsed seconds
+Timing for main: time 2004-10-15_00:00:14 on domain   3:    1.45972 elapsed seconds
+Timing for main: time 2004-10-15_00:00:16 on domain   3:    1.57847 elapsed seconds
+Timing for main: time 2004-10-15_00:00:19 on domain   3:    1.58216 elapsed seconds
+Timing for main: time 2004-10-15_00:00:21 on domain   3:    1.59323 elapsed seconds
+Timing for main: time 2004-10-15_00:00:24 on domain   3:    1.59688 elapsed seconds
+Timing for main: time 2004-10-15_00:00:24 on domain   2:    8.52059 elapsed seconds
+Timing for main: time 2004-10-15_00:00:26 on domain   3:    1.46990 elapsed seconds
+Timing for main: time 2004-10-15_00:00:28 on domain   3:    1.51958 elapsed seconds
+Timing for main: time 2004-10-15_00:00:31 on domain   3:    1.53885 elapsed seconds
+Timing for main: time 2004-10-15_00:00:33 on domain   3:    1.49684 elapsed seconds
+Timing for main: time 2004-10-15_00:00:36 on domain   3:    1.49042 elapsed seconds
+Timing for main: time 2004-10-15_00:00:36 on domain   2:    8.23571 elapsed seconds
+Timing for main: time 2004-10-15_00:00:38 on domain   3:    1.50050 elapsed seconds
+Timing for main: time 2004-10-15_00:00:40 on domain   3:    1.48978 elapsed seconds
+Timing for main: time 2004-10-15_00:00:43 on domain   3:    1.50256 elapsed seconds
+Timing for main: time 2004-10-15_00:00:45 on domain   3:    1.48793 elapsed seconds
+Timing for main: time 2004-10-15_00:00:48 on domain   3:    1.46174 elapsed seconds
+Timing for main: time 2004-10-15_00:00:48 on domain   2:    8.16690 elapsed seconds
+Timing for main: time 2004-10-15_00:00:50 on domain   3:    1.48257 elapsed seconds
+Timing for main: time 2004-10-15_00:00:52 on domain   3:    1.51895 elapsed seconds
+Timing for main: time 2004-10-15_00:00:55 on domain   3:    1.51716 elapsed seconds
+Timing for main: time 2004-10-15_00:00:57 on domain   3:    1.51185 elapsed seconds
+Timing for main: time 2004-10-15_00:01:00 on domain   3:    1.49794 elapsed seconds
+Timing for main: time 2004-10-15_00:01:00 on domain   2:    8.28678 elapsed seconds
+Timing for main: time 2004-10-15_00:01:00 on domain   1:   74.08755 elapsed seconds
+Timing for main: time 2004-10-15_00:01:02 on domain   3:    3.27761 elapsed seconds
+Timing for main: time 2004-10-15_00:01:04 on domain   3:    1.47258 elapsed seconds
+Timing for main: time 2004-10-15_00:01:07 on domain   3:    1.47279 elapsed seconds
+Timing for main: time 2004-10-15_00:01:09 on domain   3:    1.51903 elapsed seconds
+Timing for main: time 2004-10-15_00:01:12 on domain   3:    1.51588 elapsed seconds
+Timing for main: time 2004-10-15_00:01:12 on domain   2:   10.01124 elapsed seconds
