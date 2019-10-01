@@ -27,5 +27,6 @@
 
 # Dirs
 ./data/*
-./local_data/*
+./local_data/obs/*.nc
+./local_data/*/*.nc
 ./plot/*
