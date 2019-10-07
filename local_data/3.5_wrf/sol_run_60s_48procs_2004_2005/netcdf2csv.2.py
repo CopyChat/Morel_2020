@@ -3,7 +3,8 @@
 ========
 Ctang, this code read 1 pixel of netcdf file,
        and then covert to csv in local time.
-
+ to call this code :
+ netcdf2csv.2.py SWDOWN.hour.d03.wrf3.5.nc SWDOWN -time Times -lon 55.5 -lat -21.2 -prefix jjj,
 ======== 
 """
 import sys
@@ -44,6 +45,7 @@ def utc2local(test, df):
 def read_netcdf(test: bool, netcdf: str, var: str, time_var: str, start_time: str, lon_loc: int, lat_loc: int):
     """
     to read input netcdf file return a pd.DataFrame
+    :param start_time: to add the list of timestamp to the output pd.DataFrame
     :param time_var: name of time var
     :param lat_loc: location index of moufia
     :param lon_loc:
@@ -59,10 +61,9 @@ def read_netcdf(test: bool, netcdf: str, var: str, time_var: str, start_time: st
 
     times = nc.variables[time_var]
     # jd: np.ndarray = netCDF4.num2date(times[:], times.units)
-
     jd = np.array(times)
-    # find index:
 
+    # find index:
     index_lon = find_lonlat_index(start=55.02496, end=56.04868, number=140, input_location=lon_loc, reso=0.05)
     index_lat = find_lonlat_index(start=-21.59586, end=-20.64304, number=140, input_location=lat_loc, reso=0.05)
 
@@ -72,7 +73,6 @@ def read_netcdf(test: bool, netcdf: str, var: str, time_var: str, start_time: st
 
     if test:
         print(f'starting to read var, it will takes a while...')
-    # hs = pd.Series(h, index=jd)
     df = pd.DataFrame(np.array(v), index=dt_list, columns=[var])
 
     if test:
@@ -117,21 +117,23 @@ def get_dt_list(start, number):
 @click.option('--test', '-t', is_flag=True, default=False, help='output testing info ?')
 @click.option('--output_prefix', '-prefix', help='output prefix str')
 @click.option('--time_var', '-time', help='time var name')
-@click.option('--lon_loc', '-lon', help='location of lon')
-@click.option('--lat_loc', '-lat', help='location of lat')
-def main(test, netcdf, var, output_prefix, time_var, lon_loc, lat_loc):
+@click.option('--longitude', '-lon', help='longitude')
+@click.option('--latitude', '-lat', help='latitude')
+def main(test, netcdf, var, output_prefix, time_var, longitude, latitude):
     """
     read netcdf var one point, and output csv
+    :param time_var:
+    :param longitude:
+    :param latitude:
     :param output_prefix:
-    :param lat_loc:
-    :param lon_loc:
     :param test:
     :param netcdf:
     :param var:
     :return:
     """
     # read netcdf
-    df_utc = read_netcdf(test, netcdf, var, start_time="2004-10-15 00:00:00", time_var=time_var, lon_loc=lon_loc, lat_loc=lat_loc)
+    df_utc = read_netcdf(test, netcdf, var, start_time="2004-10-15 00:00:00",
+                         time_var=time_var, lon_loc=longitude, lat_loc=latitude)
 
     if test:
         print(f'read done')
