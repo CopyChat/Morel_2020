@@ -7,6 +7,7 @@ __author__ = "ChaoTANG@univ-reunion.fr"
 
 import sys
 import numpy as np
+import xarray as xr
 import pandas as pd
 import matplotlib.pyplot as plt
 from labellines import labelLines
@@ -22,31 +23,64 @@ import GEO_PLOT
 def get_statistics(gg):
     from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
-    bias = np.mean(gg['ssr_wrf35'] - gg['ssr_meteofrance'])
-    r2 = r2_score(gg['ssr_wrf35'], gg['ssr_meteofrance'])
-    mae = mean_absolute_error(gg['ssr_wrf35'], gg['ssr_meteofrance'])
-    rmse = np.sqrt(mean_squared_error(gg['ssr_wrf35'], gg['ssr_meteofrance']))
-    corr = np.corrcoef(gg['ssr_wrf35'], gg['ssr_meteofrance'])[0, 1]
+    bias = np.mean(gg['swdown_wrf41'] - gg['ssr_meteofrance'])
+    r2 = r2_score(gg['swdown_wrf41'], gg['ssr_meteofrance'])
+    mae = mean_absolute_error(gg['swdown_wrf41'], gg['ssr_meteofrance'])
+    rmse = np.sqrt(mean_squared_error(gg['swdown_wrf41'], gg['ssr_meteofrance']))
+    corr = np.corrcoef(gg['swdown_wrf41'], gg['ssr_meteofrance'])[0, 1]
 
     return pd.Series(dict(MEAN_BIAS=bias, R2=r2, MAE=mae, RMSE=rmse, corr=corr))
 
 
 # ----------------------------- plot station mean -----------------------------
+meteofrance_missing = 0
 bias = 0
-mean = 1
+wrf41_vs_wrf35 = 0
+station_mean_hourly_bias = 0
+mean = 0
 diurnal = 0
+diurnal_bias = 0
 statistics = 0
 bias_distribution = 0
+seasonal_bias = 0
 ssr_altitude = 0
 hourly_bias_at_different_stations = 0
+monthly_mean_bias_at_station = 0
+monthly_circulation_era5 = 1
+where_and_when_cloud = 0
+monthly_mean_bias_clustering = 1
+# ----------------------------- code options -----------------------------
+
+if meteofrance_missing:
+    ssr_MeteoFrance = f'SELECT station_id, dt as DateTime, ssr_meteofrance as ssr, longitude, latitude ' \
+                      f'from SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                      f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
+                      f'hour(dt)>=8 and hour(dt)<=17;'
+
+    ssr_MeteoFrance_df = GEO_PLOT.query_data(mysql_query=ssr_MeteoFrance, remove_missing_data=False)
+    ssr_station_mean = ssr_MeteoFrance_df.groupby('station_id').mean()
+
+    # ----------------------------- missing timestep -----------------------------
+    # to plot a map of all these meteofrance with only missing value
+
+    GEO_PLOT.station_data_missing_map_hourly_by_month(df=ssr_MeteoFrance_df,
+                                                      station_id='station_id', columns='ssr_meteofrance')
+    # ----------------------------- missing timestep -----------------------------
+    # to check if there is station with too few records at daytime hours
+    ssr_MeteoFrance_df['Hour'] = ssr_MeteoFrance_df.index.hour
+    df_0 = ssr_MeteoFrance_df[['Hour', 'station_id']]
+    df = df_0.pivot_table(index='station_id', columns='Hour', aggfunc=np.count_nonzero)
+    df_2 = df_0.pivot_table(columns='station_id', index='Hour', aggfunc=np.count_nonzero)
 
 if mean:
-    ssr_MeteoFrance = f'SELECT station_id, dt as DateTime, swdown_wrf41 as ssr, longitude, latitude ' \
+    ssr_MeteoFrance = f'SELECT station_id, dt as DateTime, ssr_meteofrance as ssr,' \
+                      f'altitude, longitude, latitude ' \
                       f'from SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
                       f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
                       f'hour(dt)>=8 and hour(dt)<=17;'
 
     ssr_MeteoFrance_df = GEO_PLOT.query_data(mysql_query=ssr_MeteoFrance)
+
     ssr_station_mean = ssr_MeteoFrance_df.groupby('station_id').mean()
     GEO_PLOT.plot_station_value(lon=ssr_station_mean['longitude'], lat=ssr_station_mean['latitude'],
                                 value=ssr_station_mean['ssr'], cbar_label=r'SSR $(W/m^2)$',
@@ -56,28 +90,102 @@ if mean:
     # ~/Microsoft_OneDrive/OneDrive/CODE/Morel_2020/local_data/4.1_wrf/netcdf2csv.py,
     # according to the meteofrance stations' lon/lat.
     # TODO: rerun wrf model for 1 timestep, then add the xlong and xlat to the addout* files.
-# ----------------------------- plot diurnal cycle -----------------------------
 
+    GEO_PLOT.vis_a_vis_plot(x=ssr_station_mean['altitude'], y=ssr_station_mean['ssr'],
+                            xlabel='altitude', ylabel='ssr_MeteoFrance', title='SSR vs altitude')
+
+    # ----------------------------- WRF 4.1 -----------------------------
+    ssr_wrf41 = f'SELECT station_id, dt as DateTime, swdown_wrf41 as ssr, longitude, latitude ' \
+                f'from SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
+                f'hour(dt)>=8 and hour(dt)<=17;'
+
+    ssr_wrf41_df = GEO_PLOT.query_data(mysql_query=ssr_wrf41)
+    ssr_station_mean = ssr_wrf41_df.groupby('station_id').mean()
+    GEO_PLOT.plot_station_value(lon=ssr_station_mean['longitude'], lat=ssr_station_mean['latitude'],
+                                value=ssr_station_mean['ssr'], cbar_label=r'SSR $(W/m^2)$',
+                                fig_title='MEAN of wrf4.1 (8h00 ~ 17h00)')
+
+    # ----------------------------- WRF 3.5 -----------------------------
+    ssr_wrf35 = f'SELECT station_id, dt as DateTime, swdown_wrf35 as ssr, longitude, latitude ' \
+                f'from SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
+                f'hour(dt)>=8 and hour(dt)<=17;'
+
+    ssr_wrf35_df = GEO_PLOT.query_data(mysql_query=ssr_wrf35)
+    ssr_station_mean = ssr_wrf35_df.groupby('station_id').mean()
+    GEO_PLOT.plot_station_value(lon=ssr_station_mean['longitude'], lat=ssr_station_mean['latitude'],
+                                value=ssr_station_mean['ssr'], cbar_label=r'SSR $(W/m^2)$',
+                                fig_title='MEAN of wrf3.5 (8h00 ~ 17h00)')
+
+    # ----------------------------- WRF 4.1 - WRF 3.5 -----------------------------
+if wrf41_vs_wrf35:
+
+    ssr_wrf4135 = f'SELECT station_id, dt as DateTime, swdown_wrf35 as ssr35, swdown_wrf41 as ssr41, ' \
+                  f'longitude, latitude, altitude ' \
+                  f'from SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                  f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
+                  f'hour(dt)>=8 and hour(dt)<=17;'
+
+    ssr_wrf4135_df = GEO_PLOT.query_data(mysql_query=ssr_wrf4135)
+    ssr_station_mean = ssr_wrf4135_df.groupby('station_id').mean()
+
+    ssr_station_mean['diff_abs'] = np.abs(ssr_station_mean['ssr41'] - ssr_station_mean['ssr35'])
+    ssr_station_mean['diff'] = ssr_station_mean['ssr41'] - ssr_station_mean['ssr35']
+
+    # plot the difference
+    GEO_PLOT.plot_station_value(lon=ssr_station_mean['longitude'], lat=ssr_station_mean['latitude'],
+                                value=ssr_station_mean['diff'],
+                                cbar_label=r'SSR $(W/m^2)$',
+                                fig_title='abs(WRF4.1 - WRF3.5) (8h00 ~ 17h00)')
+
+    GEO_PLOT.plot_station_value(lon=ssr_station_mean['longitude'], lat=ssr_station_mean['latitude'],
+                                value=ssr_station_mean['diff_abs'],
+                                cbar_label=r'SSR $(W/m^2)$',
+                                fig_title='WRF4.1 - WRF3.5 (8h00 ~ 17h00)')
+
+    # plot abs(diff) vs altitude:
+
+    GEO_PLOT.vis_a_vis_plot(x=ssr_station_mean.altitude, y=ssr_station_mean.diff_abs,
+                            xlabel='altitude', ylabel='abs(WRF4.1-WRF3.5)',
+                            title='absolute (WRF4.1 - WRF3.5) vs station altitude')
+
+
+# ----------------------------- plot diurnal cycle -----------------------------
 if diurnal:
 
-    ssr_diurnal = f'SELECT station_id, dt as DateTime,' \
-                  f'ssr_meteofrance, ssr_sarah_e, ssr_wrf35 ' \
-                  f'FROM SWIO.SSR_Hourly_MeteoFrance_and_WRF35_and_SARAH_E ' \
+    ssr_diurnal = f'SELECT station_id, dt as DateTime, ssr_meteofrance, ssr_sarah_e, swdown_wrf41, swdown_wrf35 ' \
+                  f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
                   f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00";'
 
     diurnal_data = GEO_PLOT.query_data(ssr_diurnal)
     GEO_PLOT.plot_hourly_curve_by_month(diurnal_data.groupby(diurnal_data.index).mean(),
-                                        columns=['ssr_meteofrance', 'ssr_sarah_e', 'ssr_wrf35'])
+                                        columns=['ssr_meteofrance', 'ssr_sarah_e', 'swdown_wrf41', 'swdown_wrf35'])
 
-    GEO_PLOT.plot_hourly_boxplot_by(diurnal_data, ['ssr_meteofrance', 'ssr_sarah_e', 'ssr_wrf35'], by=None)
-    GEO_PLOT.plot_hourly_boxplot_by(diurnal_data, ['ssr_meteofrance', 'ssr_sarah_e', 'ssr_wrf35'], by='Month')
+    # GEO_PLOT.plot_hourly_boxplot_by(diurnal_data, ['ssr_meteofrance', 'ssr_sarah_e', 'swdown_wrf41', 'swdown_wrf35'],
+    #                                 by=None)
+    GEO_PLOT.plot_hourly_boxplot_by(diurnal_data, ['ssr_meteofrance', 'ssr_sarah_e', 'swdown_wrf41', 'swdown_wrf35'],
+                                    by='Month')
 
+# ----------------------------- diurnal_bias -----------------------------
+if diurnal_bias:
+
+    ssr_diurnal = f'SELECT station_id, dt as DateTime, ssr_meteofrance, ssr_sarah_e, swdown_wrf41, swdown_wrf35 ' \
+                  f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                  f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00";'
+
+    diurnal_data = GEO_PLOT.query_data(ssr_diurnal)
+
+    diurnal_data['bias'] = diurnal_data['swdown_wrf41'] - diurnal_data['ssr_meteofrance']
+
+    GEO_PLOT.plot_hourly_curve_by_month(diurnal_data.groupby(diurnal_data.index).mean(),
+                                        columns=['bias'], bias=True)
 # ----------------------------- plot statistics @ stations -----------------------------
 if statistics:
 
     ssr_daytime = f'SELECT station_id, dt as DateTime,' \
-                  f'ssr_meteofrance, ssr_sarah_e, ssr_wrf35, longitude, latitude ' \
-                  f'FROM SWIO.SSR_Hourly_MeteoFrance_and_WRF35_and_SARAH_E ' \
+                  f'ssr_meteofrance, ssr_sarah_e, swdown_wrf35, swdown_wrf41, longitude, latitude ' \
+                  f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
                   f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
                   f'hour(dt)>=8 and hour(dt)<=17;'
 
@@ -90,17 +198,19 @@ if statistics:
 
     values = [statistics[x] for x in statistics.columns[1:]]
     cbar_labels = [r'SSR $(W/m^2)$' for i in range(len(statistics.columns[1:]))]
-    fig_titles = [s + ' (WRF3.5 and MétéoFrance) 8h00 ~ 17h00' for s in statistics.columns[1:]]
+    fig_titles = [s + ' (WRR4.1 and MétéoFrance) 8h00 ~ 17h00' for s in statistics.columns[1:]]
+    bias_label = [True, False, False, False, False]
 
-    for value, cbar_label, fig_title in zip(values, cbar_labels, fig_titles):
-        GEO_PLOT.plot_station_value(lon=lon, lat=lat, value=value, cbar_label=cbar_label, fig_title=fig_title)
+    for value, cbar_label, fig_title, bias_label in zip(values, cbar_labels, fig_titles, bias_label):
+        GEO_PLOT.plot_station_value(lon=lon, lat=lat, value=value, cbar_label=cbar_label,
+                                    fig_title=fig_title, bias=bias_label)
 
 # ----------------------------- station with min/max bias -----------------------------
 
 
 # ----------------------------- bias distribution -----------------------------
 
-if bias:
+if station_mean_hourly_bias:
     # df: index=datetime, columns={'ssr_meteofrance', 'ssr_wrf35', 'ssr_sarah_e', 'month', 'zenith'}
 
     ssr_hourly = f'SELECT station_id, dt as DateTime, hour(dt) as Hour, longitude, latitude, ' \
@@ -168,25 +278,18 @@ if bias_distribution:
 if ssr_altitude:
     # to find the model accuracy with  altitude:
 
-    ssr_height = f'SELECT station_id, dt as DateTime, altitude, ' \
-                 f'AVG(ssr_meteofrance) as ssr_mf, ' \
-                 f'AVG(swdown_wrf35) as ssr_wrf35, ' \
-                 f'AVG(swdown_wrf41) as ssr_wrf41 ' \
-                 f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
-                 f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
-                 f'hour(dt)>=5 and hour(dt)<=20 ' \
-                 f'group by station_id;'
+    bias_height = f'SELECT station_id, dt as DateTime, altitude, ' \
+                  f'VARIANCE(ssr_meteofrance) as ssr_mf, ' \
+                  f'VARIANCE(swdown_wrf35) as ssr_wrf35, ' \
+                  f'VARIANCE(swdown_wrf41) as ssr_wrf41 ' \
+                  f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                  f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
+                  f'hour(dt)>=5 and hour(dt)<=20 ' \
+                  f'group by station_id;'
 
-    ssr_height = f'SELECT station_id, dt as DateTime, altitude, ' \
-                 f'VARIANCE(ssr_meteofrance) as ssr_mf, ' \
-                 f'VARIANCE(swdown_wrf35) as ssr_wrf35, ' \
-                 f'VARIANCE(swdown_wrf41) as ssr_wrf41 ' \
-                 f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
-                 f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
-                 f'hour(dt)>=5 and hour(dt)<=20 ' \
-                 f'group by station_id;'
+    bias_height_df: pd.DataFrame = GEO_PLOT.query_data(bias_height)
 
-    df: pd.DataFrame = GEO_PLOT.query_data(ssr_height)
+    bias_height_df['bias'] = bias_height_df['wrf41'] - bias_height_df['ssr_mf']
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(18, 6), facecolor='w', edgecolor='k', dpi=200)  # figsize=(w,h)
     fig.subplots_adjust(left=0.05, right=0.95, bottom=0.05, hspace=0.4, top=0.8, wspace=0.05)
@@ -259,3 +362,154 @@ if hourly_bias_at_different_stations:
     plt.show()
 
     print(f'got data')
+# ----------------------------- monthly_mean_bias_at_station -----------------------------
+if monthly_mean_bias_at_station:
+
+    ssr_daytime = f'SELECT station_id, dt as DateTime,' \
+                  f'ssr_meteofrance, ssr_sarah_e, swdown_wrf35, swdown_wrf41, longitude, latitude ' \
+                  f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                  f'where dt>="2004-11-01" and dt<="2005-04-30 23:59:00" and ' \
+                  f'hour(dt)>=8 and hour(dt)<=17;'
+
+    ssr_daytime_df = GEO_PLOT.query_data(ssr_daytime, remove_missing_data=True)
+
+    station_group = ssr_daytime_df.groupby('station_id')
+    lon = station_group[['longitude']].mean().values[:, 0]
+    lat = station_group[['latitude']].mean().values[:, 0]
+
+    ssr_daytime_df['bias'] = ssr_daytime_df['swdown_wrf41'] - ssr_daytime_df['ssr_meteofrance']
+
+    # ----------------------------- plotting -----------------------------
+    GEO_PLOT.plot_station_value_by_month(lon, lat, ssr_daytime_df[['station_id', 'bias']],
+                                         cbar_label=r'SSR $(W/m^2)$', fig_title='test', bias=True)
+
+
+if monthly_circulation_era5:
+
+    wind_era5 = f'{DIR:s}/data/ERA5/u.v.850hPa.era5.monthly.swio.nc'
+    wind_ds = xr.open_dataset(wind_era5)
+
+    sea_level_pressure = f'{DIR:s}/data/ERA5/msl.t2m.ssrd.era5.monthly.swio.nc'
+
+    ds = xr.open_dataset(sea_level_pressure)
+    press_ds = ds.msl
+    ssr = ds.ssrd/85400
+
+    # ----------------------------- plotting -----------------------------
+    GEO_PLOT.monthly_circulation(lon=wind_ds.longitude, lat=wind_ds.latitude,
+                                 u=wind_ds.u, v=wind_ds.v, p=ssr, domain='reu_mau',
+                                 cbar_label='mean sea level pressure', fig_title='testing', bias=False)
+
+    print(f'ggg')
+
+
+# ==================================================================== cloud
+if where_and_when_cloud:
+
+    # bias
+    ssr_daytime = f'SELECT station_id, dt as DateTime,' \
+                  f'ssr_meteofrance, ssr_sarah_e, swdown_wrf35, swdown_wrf41, longitude, latitude ' \
+                  f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                  f'where dt>="2004-12-01" and dt<="2005-02-28 23:59:00" and ' \
+                  f'hour(dt)>=8 and hour(dt)<=17;'
+
+    ssr_daytime_df = GEO_PLOT.query_data(ssr_daytime)
+
+    station_group = ssr_daytime_df.groupby('station_id')
+    lon = station_group[['longitude']].mean().values[:, 0]
+    lat = station_group[['latitude']].mean().values[:, 0]
+
+    ssr_daytime_df['bias'] = ssr_daytime_df['swdown_wrf41'] - ssr_daytime_df['ssr_meteofrance']
+
+    # cloud fraction cover
+    cfc_cmsaf = f'{DIR:s}/local_data/obs/CFC.cmsaf.hour.reu.DJF.nc'
+    cloud = xr.open_dataset(cfc_cmsaf)
+    print(f'good data')
+    # ----------------------------- plotting -----------------------------
+
+    # plot diurnal cloud and ssr bias:
+    GEO_PLOT.plot_scatter_contourf(lon=cloud.lon, lat=cloud.lat, cloud=cloud.CFC, cbar_label='mean cloud fraction (%)',
+                                   lon_mf=lon, lat_mf=lat, value=ssr_daytime_df[['bias', 'station_id']],
+                                   cbar_mf=r'SSR WRF4.1-MF $(W/m^2)$',
+                                   bias=False, bias_mf=True)
+
+
+if monthly_mean_bias_clustering:
+
+
+    # bias
+    ssr_daytime = f'SELECT station_id, dt as DateTime,' \
+                  f'ssr_meteofrance, ssr_sarah_e, swdown_wrf35, swdown_wrf41, longitude, latitude ' \
+                  f'FROM SWIO.SSR_Hourly_MeteoFrance_WRF35_WRF41_SARAH_E ' \
+                  f'where dt>="2004-12-01" and dt<="2005-02-28 23:59:00" and ' \
+                  f'hour(dt)>=8 and hour(dt)<=17;'
+
+    df = GEO_PLOT.query_data(ssr_daytime)
+
+    df['bias'] = df['swdown_wrf41'] - df['ssr_meteofrance']
+
+    stations = list(set(df.station_id))
+
+    DJF_mean_hourly_bias = pd.DataFrame(columns=[str(i) for i in range(8, 18)])
+
+    for i in range(len(stations)):
+        sta = df[df['station_id'] == stations[i]]
+        sta['hour'] = sta.index.hour
+        sta_hour_group = sta.groupby('hour').mean()
+
+        temp = sta_hour_group['bias'].values.reshape(1, 10)
+
+        temp_df = pd.DataFrame(columns=[str(i) for i in range(8, 18)], data=temp)
+        DJF_mean_hourly_bias = DJF_mean_hourly_bias.append(temp_df)
+
+    DJF_mean_hourly_bias['station_id'] = stations
+    DJF_mean_hourly_bias = DJF_mean_hourly_bias.set_index('station_id', drop=True)
+
+    # locations
+    locations = df.groupby('station_id').mean()[['longitude', 'latitude']]
+
+    # ----------------------------- clustering -----------------------------
+    bias_cluster_mean, labels = GEO_PLOT.cluster_mean_gaussian_mixture(DJF_mean_hourly_bias, n_components=2,
+                                                                       max_iter=100, cov_type='diag')
+
+    GEO_PLOT.plot_daily_cluster_mean(bias_cluster_mean, locations, labels, ylabel='WRF4.1-MF',
+                                     title='DJF_mean hourly clustering of bias')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
